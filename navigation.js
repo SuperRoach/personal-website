@@ -36,6 +36,8 @@ heroArt.addEventListener('pointermove', event => {
   const bounds = heroArt.getBoundingClientRect();
   const x = (event.clientX - bounds.left) / bounds.width - .5;
   const y = (event.clientY - bounds.top) / bounds.height - .5;
+  heroArt.style.setProperty('--grid-x', `${(x + .5) * 100}%`);
+  heroArt.style.setProperty('--grid-y', `${(y + .5) * 100}%`);
   heroArt.style.setProperty('--art-x', `${x * 24}px`);
   heroArt.style.setProperty('--art-y', `${y * 20}px`);
 });

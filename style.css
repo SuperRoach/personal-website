@@ -169,7 +169,8 @@ h1 span, h2 span { color: var(--accent); }
   background-image:
     linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
     linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
-  background-size: 7% 8%;
+  --grid-size: 7% 8%;
+  background-size: var(--grid-size);
   box-shadow: .4rem .4rem 0 var(--ink);
 }
 
@@ -177,6 +178,34 @@ h1 span, h2 span { color: var(--accent); }
   --grid-line: #b8c7ff29;
   background-color: #131c59;
   color: #ffdf9e;
+}
+
+
+@media (prefers-reduced-motion: no-preference) and (hover: hover) and (pointer: fine) {
+  .identity::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(to right, #bbdcff 1px, transparent 1px),
+      linear-gradient(to bottom, #bbdcff 1px, transparent 1px);
+    background-size: var(--grid-size);
+    mask-image: radial-gradient(
+      circle clamp(55px, 22cqw, 130px) at var(--grid-x, 50%) var(--grid-y, 50%),
+      #000, #0008 42%, transparent 100%
+    );
+    opacity: 0;
+  }
+
+  .identity:hover::before {
+    animation: grid-glow 3.4s ease-in-out infinite;
+  }
+}
+
+@keyframes grid-glow {
+  0%, 100% { opacity: .24; }
+  50% { opacity: .56; }
 }
 
 .sky {
@@ -223,8 +252,47 @@ h1 span, h2 span { color: var(--accent); }
 }
 
 .planet-ring[data-layer="front"] {
-  clip-path: inset(50% 0 0 0);
+  clip-path: inset(50% -1rem -1rem -1rem);
   border-color: #e8eeff;
+}
+
+
+.ring-glint {
+  display: none;
+}
+
+@supports (offset-path: ellipse(50% 50%)) {
+  @media (prefers-reduced-motion: no-preference) {
+    .ring-glint {
+      --size: clamp(4px, 1.3cqw, 7px);
+      --brightness: .76;
+      --phase: -2.6s;
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: var(--size);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: #fff3ce;
+      box-shadow: 0 0 clamp(3px, 1.4cqw, 8px) #ffdca0;
+      opacity: var(--brightness);
+      offset-path: ellipse(calc(50% + .9cqw) calc(50% + .9cqw));
+      offset-rotate: 0deg;
+      animation: ring-orbit 14s linear var(--phase) infinite;
+    }
+
+    .ring-glint:nth-child(2) { --size: 4px; --brightness: .43; --phase: -2.39s; }
+    .ring-glint:nth-child(3) { --size: 3px; --brightness: .34; --phase: -2.19s; }
+    .ring-glint:nth-child(4) { --size: 3px; --brightness: .26; --phase: -1.89s; }
+    .ring-glint:nth-child(5) { --size: 2px; --brightness: .18; --phase: -1.54s; }
+    .ring-glint:nth-child(6) { --size: 2px; --brightness: .12; --phase: -1.13s; }
+  }
+}
+
+@keyframes ring-orbit {
+  from { offset-distance: 0%; }
+  to { offset-distance: 100%; }
 }
 
 .moon {
