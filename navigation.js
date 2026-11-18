@@ -65,3 +65,33 @@ feed.addEventListener('scroll', updateScrollShine, { passive: true });
 window.addEventListener('resize', updateScrollShine);
 scrollShine.addEventListener('change', updateScrollShine);
 updateScrollShine();
+
+
+heroArt.addEventListener('click', event => {
+  if (event.pointerType !== 'touch' || !scrollShine.matches) return;
+
+  const bounds = heroArt.getBoundingClientRect();
+  const origin = {
+    left: `${event.clientX - bounds.left - heroArt.clientLeft}px`,
+    top: `${event.clientY - bounds.top - heroArt.clientTop}px`,
+  };
+  const ripple = document.createElement('span');
+  ripple.className = 'tap-ripple';
+  Object.assign(ripple.style, origin);
+  heroArt.append(ripple);
+  ripple.animate([
+    { transform: 'translate(-50%, -50%) scale(.25)', opacity: .8 },
+    { transform: 'translate(-50%, -50%) scale(2.6)', opacity: 0 },
+  ], { duration: 560, easing: 'ease-out' }).onfinish = () => ripple.remove();
+
+  for (const [x, y] of [[-26, -16], [19, -26], [32, 4], [14, 26], [-20, 21]]) {
+    const spark = document.createElement('span');
+    spark.className = 'tap-particle';
+    Object.assign(spark.style, origin);
+    heroArt.append(spark);
+    spark.animate([
+      { transform: 'translate(-50%, -50%) scale(1)', opacity: .9 },
+      { transform: `translate(${x}px, ${y}px) scale(.25)`, opacity: 0 },
+    ], { duration: 460, easing: 'ease-out' }).onfinish = () => spark.remove();
+  }
+});

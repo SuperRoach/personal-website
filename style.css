@@ -1,4 +1,8 @@
 :root {
+  --surface-grain: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22160%22%20height%3D%22160%22%3E%3Cfilter%20id%3D%22grain%22%20x%3D%220%22%20y%3D%220%22%20width%3D%22100%25%22%20height%3D%22100%25%22%3E%3CfeTurbulence%20type%3D%22fractalNoise%22%20baseFrequency%3D%22.72%22%20numOctaves%3D%223%22%20stitchTiles%3D%22stitch%22%2F%3E%3CfeColorMatrix%20type%3D%22saturate%22%20values%3D%220%22%2F%3E%3CfeComponentTransfer%3E%3CfeFuncA%20type%3D%22linear%22%20slope%3D%22.24%22%2F%3E%3C%2FfeComponentTransfer%3E%3C%2Ffilter%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20filter%3D%22url(%23grain)%22%2F%3E%3C%2Fsvg%3E");
+}
+
+:root {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   color: #191919;
   background: #f5f0e5;
@@ -59,7 +63,7 @@ nav a[aria-current] { color: var(--paper); background: var(--ink); }
   --surface: var(--paper);
   --glow: rgb(255 255 255 / .72);
   background-color: var(--surface);
-  background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22160%22%20height%3D%22160%22%3E%3Cfilter%20id%3D%22grain%22%20x%3D%220%22%20y%3D%220%22%20width%3D%22100%25%22%20height%3D%22100%25%22%3E%3CfeTurbulence%20type%3D%22fractalNoise%22%20baseFrequency%3D%22.72%22%20numOctaves%3D%223%22%20stitchTiles%3D%22stitch%22%2F%3E%3CfeColorMatrix%20type%3D%22saturate%22%20values%3D%220%22%2F%3E%3CfeComponentTransfer%3E%3CfeFuncA%20type%3D%22linear%22%20slope%3D%22.24%22%2F%3E%3C%2FfeComponentTransfer%3E%3C%2Ffilter%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20filter%3D%22url(%23grain)%22%2F%3E%3C%2Fsvg%3E"), radial-gradient(ellipse at bottom right, var(--glow), transparent 67%);
+  background-image: var(--surface-grain), radial-gradient(ellipse at bottom right, var(--glow), transparent 67%);
   background-size: 160px 160px, 100% 100%;
   background-blend-mode: soft-light, normal;
   --button-bg: var(--ink);
@@ -228,8 +232,10 @@ h1 span, h2 span { color: var(--accent); }
   border: 1px solid #121942;
   border-radius: 50%;
   background:
+    var(--surface-grain),
     repeating-linear-gradient(-19deg, #f6765b66 0% 7%, transparent 7% 16%),
     linear-gradient(145deg, #ffe5a0 22%, #ffc477 58%, #ee7c66 85%);
+  background-blend-mode: soft-light, normal, normal;
   box-shadow: inset -3cqw -2cqw 0 #69286448, 1.05cqw 1.6cqw 0 #0b123d;
   transform: translate(-50%, -50%);
 }
@@ -279,7 +285,10 @@ h1 span, h2 span { color: var(--accent); }
       opacity: var(--brightness);
       offset-path: ellipse(calc(50% + .9cqw) calc(50% + .9cqw));
       offset-rotate: 0deg;
-      animation: ring-orbit 14s linear var(--phase) infinite;
+      offset-distance: calc(var(--orbit-progress) + var(--orbit-drift));
+      animation:
+        ring-orbit 14s linear var(--phase) infinite,
+        ring-drift 3.8s ease-in-out calc(var(--phase) * 2) infinite;
     }
 
     .ring-glint:nth-child(2) { --size: 4px; --brightness: .43; --phase: -2.39s; }
@@ -290,9 +299,26 @@ h1 span, h2 span { color: var(--accent); }
   }
 }
 
+@property --orbit-progress {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 0%;
+}
+
+@property --orbit-drift {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 0%;
+}
+
 @keyframes ring-orbit {
-  from { offset-distance: 0%; }
-  to { offset-distance: 100%; }
+  from { --orbit-progress: 0%; }
+  to { --orbit-progress: 100%; }
+}
+
+@keyframes ring-drift {
+  0%, 100% { --orbit-drift: -.65%; }
+  50% { --orbit-drift: .65%; }
 }
 
 .moon {
@@ -471,6 +497,28 @@ h1 span, h2 span { color: var(--accent); }
   font-weight: 900;
 }
 
+
+.tap-ripple, .tap-particle {
+  position: absolute;
+  z-index: 1;
+  pointer-events: none;
+  border-radius: 50%;
+}
+
+.tap-ripple {
+  width: 30px;
+  aspect-ratio: 1;
+  border: 1px solid #ffe9ac;
+  box-shadow: 0 0 8px #ffd38a80, inset 0 0 8px #ffd38a50;
+}
+
+.tap-particle {
+  width: 4px;
+  aspect-ratio: 1;
+  background: #fff0c6;
+  box-shadow: 0 0 6px #ffdb91;
+}
+
 @media (max-width: 700px) {
   :root { --header: 3.65rem; }
 
@@ -492,6 +540,42 @@ h1 span, h2 span { color: var(--accent); }
     scroll-margin-top: 0;
     scroll-snap-align: start;
     scroll-snap-stop: always;
+  }
+
+
+  .hello { min-height: calc(100% - 18px); }
+
+  .bar nav a {
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    position: relative;
+    padding: 0;
+    background: transparent;
+    color: var(--ink);
+  }
+
+  .bar nav a::after {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border: 1px solid currentColor;
+    border-radius: 50%;
+  }
+
+  .bar nav a[aria-current="location"]::after {
+    background: currentColor;
+    transform: scale(1.4);
+  }
+
+  .bar nav a span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
 
   .composition {
