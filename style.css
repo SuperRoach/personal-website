@@ -603,3 +603,61 @@ h1 span, h2 span { color: var(--accent); }
 @media (prefers-reduced-motion: no-preference) {
   html, main { scroll-behavior: smooth; }
 }
+
+@media (orientation: landscape) and (min-width: 480px) and (max-height: 520px) {
+  :root { --header: 2.75rem; }
+
+  body {
+    display: block;
+    height: auto;
+  }
+
+  main {
+    overflow: visible;
+    scroll-snap-type: none;
+  }
+
+  .bar-inner { min-height: var(--header); }
+  .mark { font-size: 1.35rem; }
+
+  .card {
+    min-height: calc(100svh - var(--header) - 1px);
+    padding-block: .85rem;
+    scroll-margin-top: calc(var(--header) + 1px);
+  }
+
+  .composition {
+    max-width: 77rem;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    grid-template-areas: "content art" "actions art";
+    gap: .65rem clamp(1rem, 4vw, 3rem);
+  }
+
+  .location { margin-bottom: .45rem; }
+
+  h1, h2 {
+    font-size: clamp(1.85rem, min(6vw, 13svh), 4.25rem);
+    line-height: .95;
+  }
+
+  h1 br, h2 br { display: none; }
+
+  .intro {
+    max-width: 39ch;
+    margin-top: .55rem;
+    font-size: clamp(.875rem, 2vw, 1rem);
+  }
+
+  .action {
+    min-height: 2.5rem;
+    padding: .4rem .7rem;
+    font-size: .875rem;
+  }
+
+  .art {
+    justify-self: end;
+    width: min(100% - .35rem, max(9rem, calc((100svh - var(--header) - 2.5rem) * 1.33)));
+    aspect-ratio: 1.33;
+    box-shadow: .3rem .3rem 0 var(--ink);
+  }
+}
